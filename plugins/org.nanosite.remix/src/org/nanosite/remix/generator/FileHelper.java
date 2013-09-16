@@ -90,7 +90,7 @@ public class FileHelper {
 	public static void copyFolder (File sourceLocation, File targetLocation) throws IOException {
 	    if (sourceLocation.isDirectory()) {
 	        if (!targetLocation.exists()) {
-	            targetLocation.mkdir();
+	            targetLocation.mkdirs();
 	        }
 
 	        String[] children = sourceLocation.list();

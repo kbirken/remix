@@ -3,25 +3,28 @@
  */
 package org.nanosite.remix.generator
 
-import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.xtext.generator.IGenerator
-import org.eclipse.xtext.generator.IFileSystemAccess
-import org.nanosite.remix.remix.Model
-import org.nanosite.remix.remix.Presentation
 import java.io.BufferedReader
-import java.io.FileReader
-import java.io.FileNotFoundException
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileReader
 import java.io.IOException
-import org.nanosite.remix.remix.Module
 import java.util.HashMap
 import java.util.Map
-import org.nanosite.remix.remix.Collection
-import org.nanosite.remix.remix.Part
 import org.eclipse.emf.common.CommonPlugin
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.xtext.generator.IFileSystemAccess
+import org.eclipse.xtext.generator.IGenerator
+import org.nanosite.remix.remix.Collection
+import org.nanosite.remix.remix.Model
+import org.nanosite.remix.remix.Module
+import org.nanosite.remix.remix.Part
+import org.nanosite.remix.remix.Presentation
 
 class RemixGenerator implements IGenerator {
 	
+	static final String RESOURCE_FOLDER = "resources" 
+
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
 		println("RemixGenerator running...")
 		for(m : resource.allContents.toIterable.filter(typeof(Model))) {
@@ -53,12 +56,12 @@ class RemixGenerator implements IGenerator {
 		
 		// copy resources from used modules
 		for(m : pres.parts.map[modules].flatten) {
-			val srcdir = m.parentFolder + "/resources"
-			val src = new File(srcdir);
-			println("copy from " + srcdir + " to " + pres.targetFolder)
+			val srcdir = m.parentFolder + File::separator + RESOURCE_FOLDER
+			val src = new File(srcdir)
+			val targetdir = pres.targetFolder + File::separator + RESOURCE_FOLDER
+			println("copy from" + sep + "  " + srcdir + " to" + sep + "  " + targetdir)
 			if (src.exists && src.directory) {
-				val target = pres.targetFolder + "/resources"
-				FileHelper::copyFolder(src, new File(target))
+				FileHelper::copyFolder(src, new File(targetdir.toString))
 			}
 		}
 		
@@ -97,7 +100,7 @@ class RemixGenerator implements IGenerator {
 			<h2>«part.title»</h2>
 			<hr>
 			«IF part.image!=null»
-			<img width="400" src="resources/«part.image»">
+			<img width="400" src="«RESOURCE_FOLDER»/«part.image»">
 			«ENDIF»
 		</section>
 
@@ -111,20 +114,34 @@ class RemixGenerator implements IGenerator {
 		«ENDFOR»
 	'''
 	
-	def private String getTargetFolder (Presentation it) {
-		target + File::separator + name
+	def private getTargetFolder (Presentation it) {
+		val f = new File(target)
+		val targetAbs = 
+			if (f.absolute) {
+				target
+			} else {
+				parentFolder + File::separator + target
+			}
+		targetAbs + File::separator + name
 	}
 
 	def private getParentFolder (Module it) {
 		if (collection.path!=null)
 			collection.path
 		else {
-			val rmxFolder = CommonPlugin::resolve(collection.eResource.URI).path
-			val n = rmxFolder.lastIndexOf(File::separator)
-			val parent = rmxFolder.substring(0, n+1)
-			parent
+			collection.parentFolderAux
 		}
 	}
+
+	def private getParentFolder (Presentation it) {
+		parentFolderAux
+	}
+	
+	def private getParentFolderAux (EObject it) {
+		val folder = CommonPlugin::resolve(eResource.URI).trimSegments(1)
+		folder.path
+	}
+
 	def private getCollection (Module it) {
 		(eContainer as Collection)
 	}
@@ -171,5 +188,6 @@ class RemixGenerator implements IGenerator {
 	def private getSep() {
 		System::getProperty("line.separator")
 	}
+
 }
 
