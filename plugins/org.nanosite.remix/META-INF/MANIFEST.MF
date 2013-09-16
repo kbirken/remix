@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.nanosite.remix
-Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.qualifier
+Bundle-Name: Remix DSL
+Bundle-Vendor: Klaus Birken
+Bundle-Version: 0.7.0.qualifier
 Bundle-SymbolicName: org.nanosite.remix; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext;visibility:=reexport,
