@@ -1,0 +1,6 @@
+
+collection examples
+	module first = "first.html"
+	module second = "second.html"
+	module reveal_demo = "reveal_demo.html"
+

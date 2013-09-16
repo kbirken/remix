@@ -1,0 +1,18 @@
+
+
+// the standard themes of reveal.js
+theme default
+theme simple // use this for creating pdf (with "print-pdf" in the URL)
+theme moon
+theme night
+theme sky
+theme beige
+theme serif
+theme solarized
+
+
+collection revealjs
+	module intro           = "reveal_intro.html"
+	module extro           = "reveal_extro.html"
+	module extro_with_leap = "reveal_extro_with_leap.html"
+

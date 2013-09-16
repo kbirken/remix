@@ -1,0 +1,15 @@
+
+
+presentation RevealDemo "reveal.js - The HTML Presentation Framework"
+	author "Hakim El Hattab"
+	part
+		revealjs.intro
+
+	part
+		examples.reveal_demo
+
+	part
+		revealjs.extro
+
+	=> "example1-gen"
+

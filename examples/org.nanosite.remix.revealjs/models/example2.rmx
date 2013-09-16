@@ -1,0 +1,21 @@
+
+presentation MyPres "My fantastic presentation"
+	author "N.N."
+	part
+		revealjs.intro
+
+	part "First part"
+		examples.first
+
+	part "Second part"
+		examples.second
+
+	part
+		revealjs.extro
+		// use this instead to activate LEAP Motion support
+		//revealjs.extro_with_leap
+
+	=> "example2-gen"
+
+
+	
