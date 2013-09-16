@@ -11,5 +11,5 @@ presentation RevealDemo "reveal.js - The HTML Presentation Framework"
 	part
 		revealjs.extro
 
-	=> "example1-gen"
+	=> "../presentation-gen"
 

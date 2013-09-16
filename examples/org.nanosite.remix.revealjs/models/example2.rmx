@@ -1,6 +1,9 @@
 
 presentation MyPres "My fantastic presentation"
 	author "N.N."
+	duration 30 minutes
+	theme solarized
+	
 	part
 		revealjs.intro
 
@@ -15,7 +18,4 @@ presentation MyPres "My fantastic presentation"
 		// use this instead to activate LEAP Motion support
 		//revealjs.extro_with_leap
 
-	=> "example2-gen"
-
-
-	
+	=> "../presentation-gen"
