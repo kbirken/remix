@@ -1,0 +1,58 @@
+grammar org.nanosite.remix.Remix with org.eclipse.xtext.common.Terminals
+
+generate remix "http://www.nanosite.org/remix/Remix"
+
+Model:
+	imports+=Import*
+	themes+=Theme*
+	collections+=Collection*
+	presentations+=Presentation*;
+
+Import:
+	'import' importedNamespace=QualifiedNameWithWildcard;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?
+	;
+
+Theme:
+	'theme' name=ID (description=STRING)?;
+
+Collection:
+	'collection' name=QualifiedName ('=' path=STRING)?
+		modules+=Module*
+	;
+
+Module:
+	'module' name=QualifiedName '=' file=STRING;
+
+Presentation:
+	'presentation' name=ID title=STRING
+		('description' description=STRING)?
+		'author' author=STRING
+		('duration' duration=INT 'minutes')?
+		('theme' theme=[Theme|ID])?
+		parts+=Part*
+		'=>' target=STRING
+	;
+
+
+Part:
+	{Part}
+	(
+		'part'
+			(
+				title=STRING
+				(image=STRING)?
+				
+			)?
+			modules+=[Module|QualifiedName]*
+	) |
+	(
+		overview?='overview'
+	)
+	;
+
+
+QualifiedName:
+	ID ('.' ID)*;
