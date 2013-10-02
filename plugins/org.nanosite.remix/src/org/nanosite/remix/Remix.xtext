@@ -32,6 +32,7 @@ Presentation:
 		'author' author=STRING
 		('duration' duration=INT 'minutes')?
 		('theme' theme=[Theme|ID])?
+		('partattr' partattr=STRING)?
 		parts+=Part*
 		'=>' target=STRING
 	;
@@ -44,7 +45,6 @@ Part:
 			(
 				title=STRING
 				(image=STRING)?
-				
 			)?
 			modules+=[Module|QualifiedName]*
 	) |
