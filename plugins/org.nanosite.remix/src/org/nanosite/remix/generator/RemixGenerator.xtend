@@ -20,6 +20,7 @@ import org.nanosite.remix.remix.Model
 import org.nanosite.remix.remix.Module
 import org.nanosite.remix.remix.Part
 import org.nanosite.remix.remix.Presentation
+import org.nanosite.remix.remix.DependencyType
 
 class RemixGenerator implements IGenerator {
 	
@@ -50,6 +51,8 @@ class RemixGenerator implements IGenerator {
 			if (pres.theme!=null) pres.theme.name else "default"
 		)
 		substitutions.put("%%AUTHOR%%", pres.author)
+
+		substitutions.put("%%CSS_NEEDS%%", pres.neededCSS)
 		
 		// generate html
 		val out = pres.genAll(substitutions)
@@ -150,6 +153,18 @@ class RemixGenerator implements IGenerator {
 		parentFolder + File::separator + file
 	}
 	
+	def private String getNeededCSS (Presentation it) '''
+		«FOR css : collectNeededCSS»
+		<link rel="stylesheet" href="«css.file»">
+		«ENDFOR»
+	'''
+
+	def private collectNeededCSS (Presentation it) {
+		parts.map[modules].flatten
+			.map[dependencies].flatten.toSet
+			.filter[type==DependencyType::CSS]
+	}
+
 	def private loadFile (String filename) {
 		var file = new File(filename)
  		var content = new StringBuffer

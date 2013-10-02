@@ -24,7 +24,16 @@ Collection:
 	;
 
 Module:
-	'module' name=QualifiedName '=' file=STRING;
+	'module' name=QualifiedName '=' file=STRING
+		dependencies+=Dependency*
+	;
+
+Dependency:
+	"needs" type=DependencyType file=STRING 
+	;
+
+enum DependencyType:
+	css="css";
 
 Presentation:
 	'presentation' name=ID title=STRING
