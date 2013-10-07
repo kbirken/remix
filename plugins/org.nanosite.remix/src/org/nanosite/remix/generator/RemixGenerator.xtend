@@ -21,6 +21,8 @@ import org.nanosite.remix.remix.Module
 import org.nanosite.remix.remix.Part
 import org.nanosite.remix.remix.Presentation
 import org.nanosite.remix.remix.DependencyType
+import org.nanosite.remix.remix.ModuleRef
+import org.nanosite.remix.remix.Configuration
 
 class RemixGenerator implements IGenerator {
 	
@@ -58,8 +60,8 @@ class RemixGenerator implements IGenerator {
 		val out = pres.genAll(substitutions)
 		
 		// copy resources from used modules
-		for(m : pres.parts.map[modules].flatten) {
-			val srcdir = m.parentFolder + File::separator + RESOURCE_FOLDER
+		for(m : pres.parts.map[modules].flatten.filter[isSelected(pres.config)]) {
+			val srcdir = m.module.parentFolder + File::separator + RESOURCE_FOLDER
 			val src = new File(srcdir)
 			val targetdir = pres.targetFolder + File::separator + RESOURCE_FOLDER
 			println("copy from" + sep + "  " + srcdir + " to" + sep + "  " + targetdir)
@@ -72,6 +74,17 @@ class RemixGenerator implements IGenerator {
 		return out
 	}
 
+	def private isSelected (ModuleRef m, Configuration cfg) {
+		if (m.selector==null)
+			true
+		else {
+			if (cfg==null)
+				false
+			else
+				cfg.active==m.selector
+		}
+	}
+	
 	def private genAll (Presentation pres, Map<String,String> substitutions) '''
 		«FOR p : pres.parts»
 		«IF p.title!=null»
@@ -81,7 +94,7 @@ class RemixGenerator implements IGenerator {
 				«pres.genOverview(pres.partattr)»
 			«ENDIF»
 		«ENDIF»
-		«p.genPartContents(substitutions)»
+		«p.genPartContents(substitutions, pres.config)»
 		«ENDFOR»
 	'''
 
@@ -109,8 +122,8 @@ class RemixGenerator implements IGenerator {
 
 	'''	
 
-	def private genPartContents (Part part, Map<String,String> substitutions) '''
-		«FOR m : part.modules»
+	def private genPartContents (Part part, Map<String,String> substitutions, Configuration cfg) '''
+		«FOR m : part.modules.filter[isSelected(cfg)].map[module]»
 		<!-- «m.name» @ «m.filename» -->
 		«m.filename.loadFile.replace(substitutions)»
 
@@ -159,8 +172,10 @@ class RemixGenerator implements IGenerator {
 		«ENDFOR»
 	'''
 
-	def private collectNeededCSS (Presentation it) {
-		parts.map[modules].flatten
+	def private collectNeededCSS (Presentation pres) {
+		pres.parts.map[modules].flatten
+			.filter[isSelected(pres.config)]
+			.map[module]
 			.map[dependencies].flatten.toSet
 			.filter[type==DependencyType::CSS]
 	}

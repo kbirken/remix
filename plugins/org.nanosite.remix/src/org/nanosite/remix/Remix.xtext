@@ -41,11 +41,18 @@ Presentation:
 		'author' author=STRING
 		('duration' duration=INT 'minutes')?
 		('theme' theme=[Theme|ID])?
+		('modes' modes+=Mode (',' modes+=Mode)*)?
+		('config' config=Configuration)?
 		('partattr' partattr=STRING)?
 		parts+=Part*
 		'=>' target=STRING
 	;
 
+Mode:
+	name=ID;
+
+Configuration:
+	active=[Mode|ID];
 
 Part:
 	{Part}
@@ -55,13 +62,17 @@ Part:
 				title=STRING
 				(image=STRING)?
 			)?
-			modules+=[Module|QualifiedName]*
+			modules+=ModuleRef*
 	) |
 	(
 		overview?='overview'
 	)
 	;
 
+ModuleRef:
+	module=[Module|QualifiedName]
+	('when' selector=[Mode|ID])?
+	;
 
 QualifiedName:
 	ID ('.' ID)*;
