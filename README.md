@@ -12,14 +12,11 @@ you will be able to create a new presentation in the order of minutes
 
 ## Installation
 
-Currently, no update site is available for REMIX.
-Thus, users have to install a proper Eclipse version
-(e.g., Eclipse Kepler for DSL developers) first.
-After that, clone this repository and build the projects
-in your Eclipse environment.
+The installable product (update site) is built by travis-ci.
+Build status: [![Build Status](https://travis-ci.org/kbirken/remix.png?branch=master)](https://travis-ci.org/kbirken/remix).
 
-The project can be built with maven. Just use the parent pom.xml
-in folder releng/org.nanosite.remix.parent.
+If you want to, the project can be built with maven.
+Just use the parent pom.xml in folder releng/org.nanosite.remix.parent.
 
 
 ## General idea
