@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.nanosite.remix_0.0.0.jar" id="org.nanosite.remix" version="0.0.0">
+      <category name="remix"/>
+   </feature>
+   <category-def name="remix" label="Remix"/>
+</site>

@@ -18,9 +18,8 @@ Thus, users have to install a proper Eclipse version
 After that, clone this repository and build the projects
 in your Eclipse environment.
 
-Unfortunately, there is no ANT or Maven build available, too.
-You have to run the mwe2 file in org.nanosite.remix to generate
-the infrastructure for the REMIX DSL.
+The project can be built with maven. Just use the parent pom.xml
+in folder releng/org.nanosite.remix.parent.
 
 
 ## General idea
