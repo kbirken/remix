@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.nanosite.remix.product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Remix Presentation Builder">
+         <property
+               name="appName"
+               value="Remix Presentation Builder">
+         </property>
+      </product>
+   </extension>
+</plugin>

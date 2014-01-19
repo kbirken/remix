@@ -24,6 +24,7 @@
     		<!-- actual code modules -->
             <module>../../plugins/org.nanosite.remix</module>
             <module>../../plugins/org.nanosite.remix.ui</module>
+            <module>../../plugins/org.nanosite.remix.product.ui</module>
     		<!-- test modules -->
     		<!-- 
             <module>../../plugins/org.nanosite.remix.tests</module>
@@ -31,6 +32,7 @@
 			<!-- release modules -->
             <module>../../features/org.nanosite.remix.feature</module>
 			<module>../../releng/org.nanosite.remix.updatesite</module>
+			<module>../../releng/org.nanosite.remix.product</module>
     </modules>
 
 	<build>
