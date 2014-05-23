@@ -12,11 +12,23 @@ you will be able to create a new presentation in the order of minutes
 
 ## Installation
 
-The installable product (update site) is built by travis-ci.
+You can install remix using an [Eclipse Update site](https://drive.google.com/folderview?id=0B7JseVbR6jvhOXFnRXYyM0k3Qmc&usp=sharing)
+which is available on Google Drive. Just download the archive, start from an
+existing or fresh Eclipse installation and install remix via
+<em>Help > Install new software... > Add... > Archive...</em>.
+If an additional product needed by remix is missing in your Eclipse installation,
+Eclipse will either install it automatically or point you towards the missing products.
+
+The installable product (update site) is also built by travis-ci.
+However, currently this product build is not publicly available. 
 Build status: [![Build Status](https://travis-ci.org/kbirken/remix.png?branch=master)](https://travis-ci.org/kbirken/remix).
 
 If you want to, the project can be built with maven.
-Just use the parent pom.xml in folder releng/org.nanosite.remix.parent.
+You then need an Eclipse development environment and the sources of remix
+(cloned from this github repository).
+Then just use the parent pom.xml in folder releng/org.nanosite.remix.parent
+and start a maven build from there. After a successful build, the ready-to-use
+product for your OS platform will be available in releng/org.nanosite.remix.product.
 
 
 ## General idea
