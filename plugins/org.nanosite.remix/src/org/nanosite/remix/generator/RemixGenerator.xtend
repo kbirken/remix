@@ -134,24 +134,39 @@ class RemixGenerator implements IGenerator {
 		«ENDFOR»
 	'''
 	
-	def private String getTargetFolder (Presentation it, Resource res) {
-		val targetAbs =
-			if (target!=null) {
-				// get target folder directly from presentation (deprecated)
-				val f = new File(target)
-				if (f.absolute) {
-					target
-				} else {
-					parentFolder + File::separator + target
-				}
+	def private String getTargetFolder (Presentation pres, Resource res) {
+		val parent = pres.getTargetParentFolder(res)
+		parent + File::separator + pres.name
+	}
+	
+	def private String getTargetParentFolder (Presentation pres, Resource res) {
+		// first try to get target folder from properties file
+		val t1 = tryGetTargetProperty(res)
+		if (t1!=null)
+			return t1
+			
+		// next, use "=>" setting from presentation
+		if (pres.target!=null) {
+			val f = new File(pres.target)
+			if (f.absolute) {
+				return pres.target
 			} else {
-				// get target folder from properties file
-				val folder = res.getProperty("target")
-				if (folder==null)
-					throw new RuntimeException("Cannot get target folder from properties file")
-				folder
+				return pres.parentFolder + File::separator + pres.target
 			}
-		targetAbs + File::separator + name
+		}
+		
+		// last, use local "pres-gen" folder
+		pres.parentFolder + File::separator + "pres-gen"
+	}
+	
+	def private String tryGetTargetProperty (Resource res) {
+		try {
+			val folder = res.getProperty("target")
+			return folder
+		} catch(Exception e) {
+			System.out.println("Info: " + e.message)
+			return null
+		}
 	}
 	
 	def private getParentFolder (Module it) {
