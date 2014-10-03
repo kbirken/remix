@@ -26,6 +26,7 @@ import org.nanosite.remix.remix.Module
 import org.nanosite.remix.remix.ModuleRef
 import org.nanosite.remix.remix.Part
 import org.nanosite.remix.remix.Presentation
+import java.io.FileInputStream
 
 class RemixGenerator implements IGenerator {
 	
@@ -266,11 +267,14 @@ class RemixGenerator implements IGenerator {
 	 */
 	def private getProperty(Resource res, String prop) {
 		val uri = res.URI.trimFileExtension.appendFileExtension("properties")
+		println("URI: " + uri)
 		val props = new Properties
 		val path = uri.toPlatformString(true)
 		val workspaceRoot = EcorePlugin::getWorkspaceRoot
 		val file = workspaceRoot.getFile(new Path(path))
-		val inputStream = file.contents
+		val absPath = file.rawLocation.toOSString
+		println("File: " + absPath)
+		val inputStream = new FileInputStream(absPath)
 		if (inputStream==null)
 			throw new RuntimeException("Cannot read properties file '" + uri + "'")
 
