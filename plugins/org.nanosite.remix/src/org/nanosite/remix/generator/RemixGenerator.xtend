@@ -127,6 +127,17 @@ class RemixGenerator implements IGenerator {
 	'''	
 
 	def private genPartContents (Part part, Map<String,String> substitutions, Configuration cfg) '''
+		«FOR s : part.specials»
+		<section>
+		<h2>TODO</h2>
+		<ul>
+		«FOR t : s.todos»
+		<li>«t»</li>
+		«ENDFOR»
+		</ul>
+		</section>
+		
+		«ENDFOR»
 		«FOR m : part.modules.filter[isSelected(cfg)].map[module]»
 		<!-- «m.name» @ «m.filename» -->
 		«m.filename.loadFile.replace(substitutions)»
