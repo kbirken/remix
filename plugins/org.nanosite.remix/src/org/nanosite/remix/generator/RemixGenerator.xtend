@@ -16,7 +16,6 @@ import org.eclipse.emf.common.CommonPlugin
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.plugin.EcorePlugin
 import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.resource.impl.URIConverterImpl
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.eclipse.xtext.generator.IGenerator
 import org.nanosite.remix.remix.Collection
@@ -243,11 +242,9 @@ class RemixGenerator implements IGenerator {
 		val uri = res.URI.trimFileExtension.appendFileExtension("properties")
 		val props = new Properties
 		val path = uri.toPlatformString(true)
-		val workspaceRoot = EcorePlugin::getWorkspaceRoot();
+		val workspaceRoot = EcorePlugin::getWorkspaceRoot
 		val file = workspaceRoot.getFile(new Path(path))
 		val inputStream = file.contents
-//		val inputStream = URIConverterImpl.WorkbenchHelper::createPlatformResourceInputStream(path)		
-//		val inputStream = new FileInputStream(path)
 		if (inputStream==null)
 			throw new RuntimeException("Cannot read properties file '" + uri + "'")
 
