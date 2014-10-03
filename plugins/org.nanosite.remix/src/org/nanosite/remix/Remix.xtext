@@ -45,7 +45,7 @@ Presentation:
 		('config' config=Configuration)?
 		('partattr' partattr=STRING)?
 		parts+=Part*
-		'=>' target=STRING
+		('=>' target=STRING)?
 	;
 
 Mode:

@@ -10,19 +10,23 @@ import java.io.FileReader
 import java.io.IOException
 import java.util.HashMap
 import java.util.Map
+import java.util.Properties
+import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.CommonPlugin
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.plugin.EcorePlugin
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.impl.URIConverterImpl
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.eclipse.xtext.generator.IGenerator
 import org.nanosite.remix.remix.Collection
+import org.nanosite.remix.remix.Configuration
+import org.nanosite.remix.remix.DependencyType
 import org.nanosite.remix.remix.Model
 import org.nanosite.remix.remix.Module
+import org.nanosite.remix.remix.ModuleRef
 import org.nanosite.remix.remix.Part
 import org.nanosite.remix.remix.Presentation
-import org.nanosite.remix.remix.DependencyType
-import org.nanosite.remix.remix.ModuleRef
-import org.nanosite.remix.remix.Configuration
 
 class RemixGenerator implements IGenerator {
 	
@@ -37,12 +41,13 @@ class RemixGenerator implements IGenerator {
 //				dotfile = m.genPath + "/" + dotfile
 			for(pres : m.presentations) {
 // 				fsa.generateFile(pres.name + ".txt", pres.generate)
-				FileHelper::save(pres.targetFolder, "index.html", pres.generate.toString)
+				val targetDir = pres.getTargetFolder(resource)
+				FileHelper::save(targetDir, "index.html", pres.generate(targetDir).toString)
  			}
  		}
 	}
 	
-	def private generate (Presentation pres) {
+	def private generate (Presentation pres, String targetDir) {
 		// prepare some substitutions
 		var substitutions = new HashMap<String,String>
 		substitutions.put("%%TITLE%%", pres.title)
@@ -63,7 +68,7 @@ class RemixGenerator implements IGenerator {
 		for(m : pres.parts.map[modules].flatten.filter[isSelected(pres.config)]) {
 			val srcdir = m.module.parentFolder + File::separator + RESOURCE_FOLDER
 			val src = new File(srcdir)
-			val targetdir = pres.targetFolder + File::separator + RESOURCE_FOLDER
+			val targetdir = targetDir + File::separator + RESOURCE_FOLDER
 			println("copy from" + sep + "  " + srcdir + " to" + sep + "  " + targetdir)
 			if (src.exists && src.directory) {
 				FileHelper::copyFolder(src, new File(targetdir.toString))
@@ -130,17 +135,26 @@ class RemixGenerator implements IGenerator {
 		«ENDFOR»
 	'''
 	
-	def private getTargetFolder (Presentation it) {
-		val f = new File(target)
-		val targetAbs = 
-			if (f.absolute) {
-				target
+	def private String getTargetFolder (Presentation it, Resource res) {
+		val targetAbs =
+			if (target!=null) {
+				// get target folder directly from presentation (deprecated)
+				val f = new File(target)
+				if (f.absolute) {
+					target
+				} else {
+					parentFolder + File::separator + target
+				}
 			} else {
-				parentFolder + File::separator + target
+				// get target folder from properties file
+				val folder = res.getProperty("target")
+				if (folder==null)
+					throw new RuntimeException("Cannot get target folder from properties file")
+				folder
 			}
 		targetAbs + File::separator + name
 	}
-
+	
 	def private getParentFolder (Module it) {
 		if (collection.path!=null)
 			collection.path
@@ -217,6 +231,35 @@ class RemixGenerator implements IGenerator {
 	
 	def private getSep() {
 		System::getProperty("line.separator")
+	}
+
+	/**
+	 * Get property from properties file.
+	 * 
+	 * The file should be located in the same folder as the resource res,
+	 * has the same basename, but it has the extension 'properties'.
+	 */
+	def private getProperty(Resource res, String prop) {
+		val uri = res.URI.trimFileExtension.appendFileExtension("properties")
+		val props = new Properties
+		val path = uri.toPlatformString(true)
+		val workspaceRoot = EcorePlugin::getWorkspaceRoot();
+		val file = workspaceRoot.getFile(new Path(path))
+		val inputStream = file.contents
+//		val inputStream = URIConverterImpl.WorkbenchHelper::createPlatformResourceInputStream(path)		
+//		val inputStream = new FileInputStream(path)
+		if (inputStream==null)
+			throw new RuntimeException("Cannot read properties file '" + uri + "'")
+
+		// load properties file 
+		props.load(inputStream)
+		
+		// get value from properties file
+		val value = props.getProperty(prop)
+		if (value==null)
+			throw new RuntimeException("Missing '" + prop + "' property in properties file '" + uri + "'")
+
+		value
 	}
 
 }
