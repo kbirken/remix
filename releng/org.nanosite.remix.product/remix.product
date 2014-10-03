@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Remix Presentation Builder" uid="org.nanosite.remix.product" id="org.nanosite.remix.product.ui.Remix" application="org.eclipse.ui.ide.workbench" version="0.7.0.qualifier" useFeatures="true" includeLaunchers="true">
-
+<product name="Remix Presentation Builder" uid="org.nanosite.remix.product" id="org.nanosite.remix.product.ui.Remix" application="org.eclipse.ui.ide.workbench" version="0.7.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -12,19 +11,15 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages
-   	i16="/org.nanosite.remix.product/icons/eclipse16.gif"
-   	i32="/org.nanosite.remix.product/icons/eclipse32.gif"
-   	i48="/org.nanosite.remix.product/icons/eclipse48.gif" />
+   <windowImages i16="/org.nanosite.remix.product/icons/eclipse16.gif" i32="/org.nanosite.remix.product/icons/eclipse32.gif" i48="/org.nanosite.remix.product/icons/eclipse48.gif"/>
 
-   <launcher>
+   <launcher name="remix">
       <macosx icon="/icons/Eclipse.icns"/>
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
