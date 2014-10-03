@@ -13,4 +13,16 @@
          </property>
       </product>
    </extension>
+   <extension
+         id="Remix"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Remix Presentation Builder">
+         <property
+               name="windowImages"
+               value="/org.nanosite.remix.product/icons/eclipse16.gif,/org.nanosite.remix.product/icons/eclipse32.gif,/org.nanosite.remix.product/icons/eclipse48.gif">
+         </property>
+      </product>
+   </extension>
 </plugin>
