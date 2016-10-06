@@ -1,0 +1,15 @@
+
+collection Collection1
+	module m1 = "m1.html"
+	
+
+presentation TestPresentation "Title Test"
+	author "Author1"
+
+	modes M1, M2
+	config M1
+	
+	part
+		Collection1.m1
+
+	=> "../../gen-out/CodeSection"

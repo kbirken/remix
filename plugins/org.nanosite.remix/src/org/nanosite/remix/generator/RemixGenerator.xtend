@@ -5,12 +5,15 @@ package org.nanosite.remix.generator
 
 import java.io.BufferedReader
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
 import java.util.HashMap
+import java.util.List
 import java.util.Map
 import java.util.Properties
+import java.util.regex.Pattern
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.CommonPlugin
 import org.eclipse.emf.ecore.EObject
@@ -26,7 +29,6 @@ import org.nanosite.remix.remix.Module
 import org.nanosite.remix.remix.ModuleRef
 import org.nanosite.remix.remix.Part
 import org.nanosite.remix.remix.Presentation
-import java.io.FileInputStream
 
 class RemixGenerator implements IGenerator {
 	
@@ -116,7 +118,7 @@ class RemixGenerator implements IGenerator {
 		
 	'''
 	
-	def private genTitle (Part part, String attr) '''
+	def private genTitle(Part part, String attr) '''
 		<section«IF attr!=null» «attr»«ENDIF»>
 			<h2>«part.title»</h2>
 			<hr>
@@ -141,7 +143,7 @@ class RemixGenerator implements IGenerator {
 		«ENDFOR»
 		«FOR m : part.modules.filter[isSelected(cfg)].map[module]»
 		<!-- «m.name» @ «m.filename» -->
-		«m.filename.loadFile.replace(substitutions)»
+		«m.filename.loadFile.replace(substitutions).formatCode»
 
 		«ENDFOR»
 	'''
@@ -151,7 +153,7 @@ class RemixGenerator implements IGenerator {
 		parent + File::separator + pres.name
 	}
 	
-	def private String getTargetParentFolder (Presentation pres, Resource res) {
+	def private String getTargetParentFolder(Presentation pres, Resource res) {
 		// first try to get target folder from properties file
 		val t1 = tryGetTargetProperty(res)
 		if (t1!=null)
@@ -255,6 +257,82 @@ class RemixGenerator implements IGenerator {
 		out
 	}
 	
+	def private formatCode(String in) {
+		val lines = in.split('\n')
+		val List<String> newLines = newArrayList
+		val List<String> codeLines = newArrayList
+		val patternStart = Pattern.compile("\\s*@([a-zA-Z_][a-zA-Z_0-9]*)@")
+		val patternEnd = Pattern.compile("\\s*@@")
+		var String isCode = null
+		for(line : lines) {
+			if (isCode!=null) {
+				val matcher = patternEnd.matcher(line)
+				if (matcher.matches()) {
+					newLines.addCodeSection(isCode, codeLines)
+					isCode = null
+					codeLines.clear
+				} else {
+					codeLines.add(line)
+				}
+			} else {
+				val matcher = patternStart.matcher(line)
+				if (matcher.matches()) {
+					isCode = matcher.group(1)
+				} else {
+					newLines.add(line)
+				}
+			}
+		}
+		newLines.join('\n')
+	}
+
+	def private void addCodeSection(List<String> newLines, String codeClass, List<String> codeLines) {
+		if (! codeLines.empty) {
+			// replace tabs by spaces
+			for(i : 0..codeLines.size-1) {
+				codeLines.set(i, codeLines.get(i).replace("\t", "  "))
+			}
+	
+			// find common whitespace prefix
+			var minLeadingSpaces = -1
+			for(cl : codeLines) {
+				if (! cl.empty) {
+					val n = cl.getNLeadingSpaces
+					if (minLeadingSpaces==-1 || n<minLeadingSpaces)
+						minLeadingSpaces = n
+				}
+			}
+
+			// output code
+			val header = '<pre><code class="' + codeClass + '">'
+			var isFirst = true
+			for(cl : codeLines) {
+				val normalized =
+					if (minLeadingSpaces>0 && cl.length>minLeadingSpaces)
+						cl.substring(minLeadingSpaces)
+					else
+						cl
+
+				if (isFirst) {
+					newLines.add(header + normalized)
+					isFirst = false					
+				} else {
+					newLines.add(normalized)
+				}
+			}
+			newLines.add("</code></pre>")
+		}
+	}
+	
+	def private int getNLeadingSpaces(String s) {
+		for(i : 0..s.length-1) {
+			val c = s.charAt(i)
+			if (! Character.isWhitespace(c))
+				return i
+		}
+		s.length
+	}
+	
 	def private getSep() {
 		System::getProperty("line.separator")
 	}
@@ -271,6 +349,9 @@ class RemixGenerator implements IGenerator {
 		val props = new Properties
 		val path = uri.toPlatformString(true)
 		val workspaceRoot = EcorePlugin::getWorkspaceRoot
+		if (workspaceRoot==null) {
+			throw new RuntimeException("Invalid workspace root")
+		}
 		val file = workspaceRoot.getFile(new Path(path))
 		val absPath = file.rawLocation.toOSString
 		println("File: " + absPath)
